@@ -12,6 +12,5 @@ DB_URL = os.getenv("DATABASE_URL")
 
 engine = create_engine(DB_URL)
 Session = sessionmaker(bind=engine)
-session = Session()
 
 Base.metadata.create_all(engine)

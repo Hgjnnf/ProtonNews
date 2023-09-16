@@ -19,7 +19,7 @@ class Article(Base):
     __tablename__ = "articles"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     title: Mapped[str] = mapped_column(String(150))
-    date: Mapped[date] = mapped_column(Date)
+    date: Mapped[Date] = mapped_column(Date)
     overview: Mapped[str] = mapped_column(Text)
     url: Mapped[str] = mapped_column(String(100))
     image_url: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)

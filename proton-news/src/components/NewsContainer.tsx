@@ -11,6 +11,7 @@ type NewsModel = {
     image_url: string,
     keywords: string[],
     rating: number,
+    primary_kw: string,
 }
 interface NewsProps {
     news: NewsModel,
@@ -18,11 +19,12 @@ interface NewsProps {
 }
 
 function News({news, popUp} : NewsProps) {
+    const placeHolder = "https://149487864.v2.pressablecdn.com/wp-content/uploads/2021/09/News-Placeholder.png"
     return (
         <div className="w-[25.1rem] h-[18.3rem] rounded-[0.94rem] overflow-hidden bg-white drop-shadow-xl
             hover:cursor-pointer" onClick={popUp}>
             <div className="w-full h-full bg-transparent relative bottom-[4rem]">
-                <img src={news.image_url} className="w-full h-full"></img>
+                <img src={news.image_url || placeHolder} className="w-full h-full"></img>
                 <div className="h-[3.8rem] w-full px-[1.31rem] pt-[0.5rem] pb-[0.2rem] flex flex-col">
                     <h3 className="font-inter font-bold text-[0.8rem]">{news.title}</h3>
                     <div className="flex items-center justify-between mt-auto">
@@ -36,63 +38,24 @@ function News({news, popUp} : NewsProps) {
 }
 
 export function NewsContainer() {
-    let samples : NewsModel[] = [
-        {
-            title : "Canada Won the FIFA Wold Cup for the First Time in History!",
-            date : new Date(Date.now()),
-            overview : "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ducimus enim optio necessitatibus harum sit facere ad excepturi non illo voluptas magni nisi, voluptate sed aliquam nesciunt vero omnis ullam nam!.In an extraordinary turn of events, Canada emerged victorious in the FIFA World Cup, stunning the global soccer community. Their remarkable journey to the top showcased unparalleled teamwork, determination, and skill, as they triumphed against formidable opponents. The celebration across the nation knew no bounds, marking a historic moment in Canadian sports history and uniting the country in a wave of pride and joy.",
-            url : "https://www.google.com/",
-            image_url : "https://img.uline.com/is/image/uline/S-20102?$Mobile_Zoom$",
-            keywords : ["soccer", "football"],
-            rating : 8.3,
-        },
-        {
-            title : "Covid19 is officially gone!",
-            date : new Date(Date.now()),
-            overview : "There are no more masks. The government has burned them all.",
-            url : "https://www.google.com/",
-            image_url : "https://www.cheo.on.ca/en/resources-and-support/resources/P6221---Isolation-during-Covid/isolation-banner.jpg",
-            keywords : ["covid19", "disease"],
-            rating : 8.3,
-        },
-        {
-            title : "Covid19 is officially gone!",
-            date : new Date(Date.now()),
-            overview : "There are no more masks. The government has burned them all.",
-            url : "https://www.google.com/",
-            image_url : "https://www.cheo.on.ca/en/resources-and-support/resources/P6221---Isolation-during-Covid/isolation-banner.jpg",
-            keywords : ["covid19", "disease"],
-            rating : 8.3,
-        },
-        {
-            title : "Canada Won the FIFA Wold Cup",
-            date : new Date(Date.now()),
-            overview : "For the first time ever in the Canadian history, we won!!",
-            url : "https://www.google.com/",
-            image_url : "https://img.uline.com/is/image/uline/S-20102?$Mobile_Zoom$",
-            keywords : ["soccer", "football"],
-            rating : 8.3,
-        },
-        {
-            title : "Covid19 is officially gone!",
-            date : new Date(Date.now()),
-            overview : "There are no more masks. The government has burned them all.",
-            url : "https://www.google.com/",
-            image_url : "https://www.cheo.on.ca/en/resources-and-support/resources/P6221---Isolation-during-Covid/isolation-banner.jpg",
-            keywords : ["covid19", "disease"],
-            rating : 8.3,
-        },
-    ]
+    const [data, setData]  = useState<NewsModel[]>([] as NewsModel[])
 
     const [isPopped, setIsPopped] = useState(false)
     const [currPopUp, setCurrPopUp] = useState<NewsModel>({} as NewsModel)
-    console.log(samples[0].date)
+    const fetchData = async (query: string) => {
+        try {
+            const response = await fetch("http://127.0.0.1:8000/news?query=" + query) 
+            setData(await response.json())
+        } catch(err : unknown) {
+            console.log(err)
+        }
+    }
     
     return (
         <>
             <div className="w-[58.8rem] h-[32.8rem] grid grid-cols-2 justify-center gap-x-[5.81rem] gap-y-[2.56rem]
                 overflow-y-scroll mt-10">
-                {samples.map((sample, idx):JSX.Element => <News key={idx} news={sample} 
+                {data?.map((sample, idx):JSX.Element => <News key={idx} news={sample} 
                     popUp={() => {setIsPopped(true); setCurrPopUp(sample)}}></News>)}
             </div>
             {/* Pop Up */}

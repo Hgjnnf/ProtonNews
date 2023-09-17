@@ -37,7 +37,10 @@ function News({news, popUp} : NewsProps) {
     )
 }
 
-export function NewsContainer() {
+interface containerProps {
+    query : string
+}
+export function NewsContainer({query} : containerProps) {
     const [data, setData]  = useState<NewsModel[]>([] as NewsModel[])
 
     const [isPopped, setIsPopped] = useState(false)
@@ -50,6 +53,7 @@ export function NewsContainer() {
             console.log(err)
         }
     }
+    fetchData(query)
     
     return (
         <>

@@ -1,6 +1,8 @@
+import os
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from urllib.parse import quote
+from typing import List
 import requests
 from model import Article
 from database import session, engine
@@ -23,6 +25,13 @@ if __name__ == "main":
 def get_root():
     return {"Hello" : "World"}
 
+@app.get("/news")
+def fetch_database(limit: int = 5, query : str = ""):
+    """Fetch data from the database with given query """
+    qry_object = session.query(Article).filter(Article.primary_kw.like(f"%{query.lower()}%"))
+
+    return qry_object.all()
+
 co = cohere.Client(cohere_api_key)
 examples=[
   Example("Now, New Delhi Station To Airport In Just 15 Minutes By Metro", "positive"), 
@@ -42,9 +51,9 @@ examples=[
   Example("Tech Leaders Gather for an A.I. Week in Washington", "neutral"),
 ]
 
-@app.get("/news")
+@app.get("/scrape")
 async def get_news(limit: int = 5, query: str = " "):
-    encoded_query = quote(query)
+    encoded_query = quote(query.lower())
     res = requests.get(news_data_api + '&q=' + encoded_query + '&language=en')
     json = res.json()
 
@@ -74,7 +83,8 @@ async def get_news(limit: int = 5, query: str = " "):
                     overview = co.summarize(text=obj['content']).summary,
                     image_url = obj['image_url'],
                     keywords = obj['keywords'],
-                    rating = rating
+                    rating = rating,
+                    primary_kw = query.lower()
                 )
 
                 arr.append(article)

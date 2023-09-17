@@ -14,7 +14,7 @@ class Article(Base):
     overview: Mapped[str] = mapped_column(Text)
     url: Mapped[str] = mapped_column(Text)
     image_url: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-
+    primary_kw: Mapped[str] = mapped_column(Text)
     keywords: Mapped[Optional[List[str]]] = mapped_column(ARRAY(String), nullable=True)
     rating: Mapped[int] = mapped_column(Integer)
 

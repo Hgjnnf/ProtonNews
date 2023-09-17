@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from urllib.parse import quote
 from typing import List
 import requests
@@ -20,26 +20,17 @@ cohere_api_key = os.getenv("COHERE_API_KEY")
 
 if __name__ == "main":
     app = FastAPI()
-    db = Session()
 
 @app.get("/")
 def get_root():
     return {"Hello" : "World"}
 
 @app.get("/news")
-def fetch_database(limit: int = 5, query : str = "") -> List[model.Article]:
+def fetch_database(limit: int = 5, query : str = ""):
     """Fetch data from the database with given query """
-    fetched_articles = []
-    fetched_res = db.query(model.Keyword).filter(model.Keyword.keyword == query).first()
-    if fetched_res is None:
-        return []
-    articles_id = fetched_res.articles
-    for id in articles_id:
-        if limit == 0: # limit the number of results
-            break
-        fetched_articles.append(db.query(model.Article).get(id))
-        limit -= 1
-    return fetched_articles
+    qry_object = session.query(Article).filter(Article.primary_kw.like(f"%{query.lower()}%"))
+
+    return qry_object.all()
 
 co = cohere.Client(cohere_api_key)
 examples=[
@@ -62,10 +53,7 @@ examples=[
 
 @app.get("/scrape")
 async def get_news(limit: int = 5, query: str = " "):
-    data = fetch_database(limit, query)
-    if len(data) > 0:
-        return data
-    encoded_query = quote(query)
+    encoded_query = quote(query.lower())
     res = requests.get(news_data_api + '&q=' + encoded_query + '&language=en')
     json = res.json()
 
@@ -95,7 +83,8 @@ async def get_news(limit: int = 5, query: str = " "):
                     overview = co.summarize(text=obj['content']).summary,
                     image_url = obj['image_url'],
                     keywords = obj['keywords'],
-                    rating = rating
+                    rating = rating,
+                    primary_kw = query.lower()
                 )
 
                 arr.append(article)

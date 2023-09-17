@@ -11,6 +11,7 @@ import os
 from sqlalchemy.sql import func
 from sqlalchemy import text, select
 from cohere.responses.classify import Example
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
@@ -20,6 +21,20 @@ cohere_api_key = os.getenv("COHERE_API_KEY")
 
 if __name__ == "main":
     app = FastAPI()
+
+origins = [
+    "https://localhost:3000",
+    "http://localhost",
+    "http://localhost:8080",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def get_root():

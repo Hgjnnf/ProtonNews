@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import { Merienda} from "@next/font/google"
-import HtN from '../../public/hackthenorth.svg'
 import cohere from '../../public/cohere.svg'
 import cockroach from '../../public/cockroach.png'
 

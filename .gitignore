@@ -2,3 +2,4 @@ back_end/venv/
 __pycache__/
 back_end/.env
 proton-news/bun.lockb
+node_modules/

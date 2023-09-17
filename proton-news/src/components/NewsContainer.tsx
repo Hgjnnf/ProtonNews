@@ -81,7 +81,7 @@ export function NewsContainer() {
     
     return (
         <div className="w-[58.8rem] h-[32.8rem] grid grid-cols-2 justify-center gap-x-[5.81rem] gap-y-[2.56rem]
-            overflow-y-scroll">
+            overflow-y-scroll mt-10">
             {samples.map((sample):JSX.Element => <News news={sample}></News>)}
         </div>
     )

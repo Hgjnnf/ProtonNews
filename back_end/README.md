@@ -9,3 +9,8 @@ To install the dependencies:
 ```bash
 pip install -r requirements.txt
 ```
+
+To start server:
+```bash
+uvicorn main:app --reload
+```

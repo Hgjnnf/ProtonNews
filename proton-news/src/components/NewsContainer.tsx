@@ -26,7 +26,7 @@ function News({news, popUp} : NewsProps) {
             <div className="w-full h-full bg-transparent relative bottom-[4rem]">
                 <img src={news.image_url || placeHolder} className="w-full h-full"></img>
                 <div className="h-[3.8rem] w-full px-[1.31rem] pt-[0.5rem] pb-[0.2rem] flex flex-col">
-                    <h3 className="font-inter font-bold text-[0.8rem]">{news.title}</h3>
+                    <h3 className="w-[18rem] h-[2rem] font-inter font-bold text-[0.8rem] overflow-y-hidden leading-tight">{news.title}</h3>
                     <div className="flex items-center justify-between mt-auto">
                         <p className="text-[0.6rem] w-[11.3rem] font-inter font-thin truncate">{news.overview}</p>
                         <span className="text-[0.6rem]">{news.rating} <FaRegSmileBeam className="inline"/></span>

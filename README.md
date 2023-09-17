@@ -1,5 +1,6 @@
 # What is ProtonNews?
 There's a lot of negativity in news articles nowadays. "News fatigue" is a phenomenon where people become tired of the constant barrage of negative news. We thought of making a positive only news app. For some, a positive news app may be a welcome alternative that helps them stay informed without feeling emotionally drained.
+
 ![Main Page](./main-page.gif)
 
 # How did we build it?

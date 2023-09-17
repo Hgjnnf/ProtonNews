@@ -4,6 +4,7 @@ import { TypeWriter } from "@/components/TypeWriter";
 import Navbar from '@/components/Navbar';
 import { Introduction } from '@/components/Introduction';
 import { Links } from '@/components/Links';
+import { NewsContainer } from "@/components/NewsContainer";
 import { title } from 'process';
 import SearchIcon from '../../public/search.svg'
 import Link from 'next/link';
@@ -43,6 +44,10 @@ export default function Home() {
         </div>
       </div>
 
+      <div className='w-full flex justify-center'>
+        <NewsContainer />
+      </div>
+      {/* <Links /> */}
     </>
   )
 }

@@ -81,7 +81,7 @@ export function NewsContainer({query} : containerProps) {
                     <div className="w-full h-[21.3rem] text-[1.4rem] text-justify px-[3.37rem] overflow-y-scroll">
                         {currPopUp.overview}
                     </div>
-                    <a href={currPopUp.url}>
+                    <a href={currPopUp.url} target="_blank">
                         <div className="w-[13.6rem] h-[3.5rem] bg-[#9CB8FF] text-black rounded-[4rem] text-[1.6rem]
                             px-[2.5rem] py-[0.35rem] mx-[13.6rem] mt-[2.5rem]
                             hover:bg-[#B6C8F5] hover:text-white">Learn More</div>

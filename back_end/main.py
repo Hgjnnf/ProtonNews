@@ -22,11 +22,7 @@ cohere_api_key = os.getenv("COHERE_API_KEY")
 if __name__ == "main":
     app = FastAPI()
 
-origins = [
-    "https://localhost:3000",
-    "http://localhost",
-    "http://localhost:8080",
-]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,

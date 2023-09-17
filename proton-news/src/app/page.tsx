@@ -1,3 +1,4 @@
+"use client"
 import Image from 'next/image';
 import ProtonLogo from '../../public/protonnews.svg'
 import { TypeWriter } from "@/components/TypeWriter";
@@ -7,20 +8,18 @@ import { Links } from '@/components/Links';
 import { NewsContainer } from "@/components/NewsContainer";
 import { title } from 'process';
 import SearchIcon from '../../public/search.svg'
-import Link from 'next/link';
-
-async function createQuery(data:FormData) {
-  "use server"
-
-  const query = data.get("query")?.valueOf()
-  console.log(query)
-
-  if (typeof title !== "string" || title.length === 0) {
-    throw new Error("Invalid Title");
-  }
-}
+import { useState } from 'react';
 
 export default function Home() {
+  const [res, setRes] = useState<string>("")
+  const createQuery = (data:FormData) => {
+    const query = data.get("query")?.valueOf()
+
+    if (typeof title !== "string" || title.length === 0) {
+      throw new Error("Invalid Title");
+    }
+    setRes(query as string)
+  }
   return (
     <>
       <Navbar />
@@ -45,9 +44,8 @@ export default function Home() {
       </div>
 
       <div className='w-full flex justify-center'>
-        <NewsContainer />
+        <NewsContainer query={res}/>
       </div>
-      {/* <Links /> */}
     </>
   )
 }

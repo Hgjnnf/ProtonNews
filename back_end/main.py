@@ -2,12 +2,12 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from urllib.parse import quote
 import requests
-from model import Keyword, Article
-from database import session
+from model import Article
+from database import session, engine
 import cohere
 import os
 from sqlalchemy.sql import func
-from sqlalchemy import select
+from sqlalchemy import text, select
 from cohere.responses.classify import Example
 
 load_dotenv()
@@ -15,8 +15,6 @@ load_dotenv()
 news_data_api_key = os.getenv("NEWS_DATA_API_KEY")
 news_data_api = "https://newsdata.io/api/1/news?apikey=" + news_data_api_key
 cohere_api_key = os.getenv("COHERE_API_KEY")
-
-print(os.getenv("DATABASE_URL"))
 
 if __name__ == "main":
     app = FastAPI()
@@ -47,59 +45,44 @@ examples=[
 @app.get("/news")
 async def get_news(limit: int = 5, query: str = " "):
     encoded_query = quote(query)
-    res = await requests.get(news_data_api + '&q=' + encoded_query + '&language=en')
+    res = requests.get(news_data_api + '&q=' + encoded_query + '&language=en')
     json = res.json()
 
-    articles = json.results
+    articles = json['results']
     arr = []
 
     i, cnt = 0, 0
     while i < len(articles) and cnt < limit:
         obj = articles[i]
-        classifyRes = co.classify(
-            model='large',
-            inputs=[obj.title],
-            examples=examples
-        )
+        qry_object = session.query(Article).where(Article.title == obj['title'])
 
-        rating = classifyRes.classifications[0].labels["positive"].confidence
-        rating = round(rating * 100)
-
-        if rating > 50:
-            article = Article(
-                title = obj.title,
-                date = obj.pubDate,
-                url = obj.link,
-                overview = co.summarize(text=obj.full_description),
-                image_url = obj.image_url,
-                keywords = obj.keywords,
-                rating = rating
+        if qry_object.first() is None:
+            classifyRes = co.classify(
+                model='large',
+                inputs=[obj['title']],
+                examples=examples
             )
 
-            arr.append(article)
+            rating = classifyRes.classifications[0].labels['positive'].confidence
+            rating = round(rating * 100)
 
-            cnt += 1
+            if rating > 50:
+                article = Article(
+                    title = obj['title'],
+                    date = obj['pubDate'],
+                    url = obj['link'],
+                    overview = co.summarize(text=obj['content']).summary,
+                    image_url = obj['image_url'],
+                    keywords = obj['keywords'],
+                    rating = rating
+                )
+
+                arr.append(article)
+
+                cnt += 1
         i += 1
 
-    
     session.add_all(arr)
     session.commit()
-
-    for obj in arr:
-        for w in obj.keywords:
-            query = session.query(
-                func.count(Article.id).filter(w in Article.keywords)
-            )
-            if query > 0:
-                kw = select(Keyword).where(Keyword.keyword == w)
-                kw.articles.append(obj.id)
-                session.commit()
-            else:
-                kw = Keyword(
-                    keyword = w,
-                    articles = [obj.id]
-                )
-                session.add(kw)
-                session.commit()
 
     return {"response": "success"}
